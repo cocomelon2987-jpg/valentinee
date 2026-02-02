@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine?</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f6f1eb;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .box {
+    max-width: 650px;
+    padding: 35px;
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    text-align: center;
+    animation: fadeSlide 0.8s ease;
+  }
+
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  button {
+    margin: 12px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  .yes {
+    background: #ff7aa2;
+    color: white;
+  }
+
+  .no {
+    background: #ddd;
+    color: #444;
+  }
+
+  img, video {
+    max-width: 100%;
+    border-radius: 14px;
+    margin-top: 15px;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="box" id="app"></div>
+
+<audio id="music" src="bg-music.mp3" loop></audio>
+
+<script>
+let step = 0;
+const app = document.getElementById("app");
+const music = document.getElementById("music");
+
+function render(content) {
+  app.innerHTML = content;
+}
+
+function wrong(msg) {
+  alert(msg);
+}
+
+function next() {
+  step++;
+  load();
+}
+
+function startMusic() {
+  music.volume = 0;
+  music.play();
+  let vol = 0;
+  const fade = setInterval(() => {
+    if (vol < 0.3) {
+      vol += 0.01;
+      music.volume = vol;
+    } else {
+      clearInterval(fade);
+    }
+  }, 200);
+}
+
+function load() {
+
+  if (step === 0) {
+    render(`
+      <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>
+      cheesy lagte, right?</p>
+      <button onclick="next()">right</button>
+      <button onclick="wrong('tum toh potty ho, try again')">naah</button>
+    `);
+  }
+
+  else if (step === 1) {
+    render(`
+      <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+      <button onclick="next()">right</button>
+      <button onclick="wrong('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
+    `);
+  }
+
+  else if (step === 2) {
+    render(`
+      <p>
+      but look where we stand today<br><br>
+      Even if I didn’t ask you to be my valentine<br>
+      You stayed. Not just on the good days.<br><br>
+      The year behind was a pretty nightmare<br>
+      But we both stood together<br>
+      Sometimes hating each other, other times loving.<br>
+      Mostly playing around, being goofy
+      </p>
+      <button class="yes" onclick="next()">show me what you mean</button>
+    `);
+  }
+
+  else if (step === 3) {
+    startMusic();
+    render(`
+      <img src="pic1.jpg">
+      <p>kha lugi mac Donald domino zindagibhar tumhare sath, pakki par nakhre obvious</p>
+
+      <img src="pic2.jpg">
+      <p>kaat lugi puri Zindagi metro station p tere sang, tu chahe toh</p>
+
+      <img src="pic3.jpg">
+      <p>Humesha ghusugi tumhare personal space me</p>
+
+      <img src="pic4.jpg">
+      <p>iss din ki trh har din khush rkhne ki koshish rahegi jaan</p>
+
+      <p>Yeh sab kuch ekdum se nahi hua,<br>
+      Dheere Dheere buna hai pyaar ke sath</p>
+
+      <button onclick="next()">true true</button>
+      <button onclick="wrong('abey chup lawdeya')">false</button>
+    `);
+  }
+
+  else if (step === 4) {
+    render(`
+      <p>
+      so here’s my question<br>
+      (you don’t have a choice)<br><br>
+
+      Will you be my valentine, Krish Sharma?<br><br>
+
+      On the good days<br>
+      On the bad days<br>
+      On random ordinary days<br><br>
+
+      Will you stick by my side forever?<br>
+      (chipki rahogi?)<br><br>
+
+      aur koi option hai?
+      </p>
+
+      <button class="yes" onclick="next()">yes</button>
+      <button class="no" style="pointer-events:none;">no</button>
+    `);
+  }
+
+  else {
+    render(`
+      <p>
+      kya be lodu?<br><br>
+      yes daba na
+      </p>
+      <button class="yes">💙</button>
+    `);
+  }
+}
+
+load();
+</script>
+
+</body>
+</html>
