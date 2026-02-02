@@ -3,208 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <title>Valentine?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: #f6f1eb;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-  }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, #ffd6e0, #f9f3ff, #dff6ff);
+}
 
-  .box {
-    max-width: 650px;
-    padding: 35px;
-    background: white;
-    border-radius: 18px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-    text-align: center;
-    animation: fadeSlide 0.8s ease;
-  }
+/* floating romantic blobs */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 50%;
+  filter: blur(120px);
+  animation: floatBg 18s infinite alternate ease-in-out;
+  z-index: -1;
+}
+body::after {
+  top: 50%;
+  left: 60%;
+  animation-delay: 5s;
+}
 
-  @keyframes fadeSlide {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+@keyframes floatBg {
+  from { transform: translate(-50px, -50px); }
+  to { transform: translate(80px, 60px); }
+}
 
-  button {
-    margin: 12px;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
+.screen {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  button:hover {
-    transform: scale(1.05);
-  }
+.container {
+  max-width: 650px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  text-align: center;
+  animation: fadeSlide 0.8s ease;
+}
 
-  .yes {
-    background: #ff7aa2;
-    color: white;
-  }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  .no {
-    background: #ddd;
-    color: #444;
-  }
+button {
+  margin: 12px;
+  padding: 12px 26px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-  img, video {
-    max-width: 100%;
-    border-radius: 14px;
-    margin-top: 15px;
-  }
+.yes { background: #ff7aa2; color: white; }
+.no { background: #ddd; position: relative; }
 
-  p {
-    line-height: 1.6;
-  }
+.memory-img {
+  max-width: 100%;
+  border-radius: 14px;
+  margin-bottom: 15px;
+  opacity: 0;
+  transform: scale(0.96);
+  animation: imgIn 1s ease forwards;
+}
+.memory-text {
+  opacity: 0;
+  animation: textIn 1.2s ease forwards;
+  animation-delay: 0.4s;
+}
+
+@keyframes imgIn { to { opacity:1; transform:scale(1);} }
+@keyframes textIn { to { opacity:1;} }
+
+.progress-bar {
+  height: 6px;
+  background: #ffd1dc;
+  width: 0%;
+  border-radius: 10px;
+  margin-top: 15px;
+  transition: width 5s linear;
+}
+
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 22px;
+  animation: float 4s linear infinite;
+}
+@keyframes float {
+  to { transform: translateY(-100vh); opacity: 0; }
+}
 </style>
 </head>
 
 <body>
 
-<div class="box" id="app"></div>
-
 <audio id="music" src="bg-music.mp3" loop></audio>
+<div id="app"></div>
 
 <script>
-let step = 0;
 const app = document.getElementById("app");
 const music = document.getElementById("music");
 
-function render(content) {
-  app.innerHTML = content;
-}
+function render(html){ app.innerHTML = html; }
+function wrong(msg){ alert(msg); }
 
-function wrong(msg) {
-  alert(msg);
-}
-
-function next() {
-  step++;
-  load();
-}
-
-function startMusic() {
+function startMusic(){
   music.volume = 0;
-  music.play();
-  let vol = 0;
-  const fade = setInterval(() => {
-    if (vol < 0.3) {
-      vol += 0.01;
-      music.volume = vol;
-    } else {
-      clearInterval(fade);
-    }
-  }, 200);
+  music.play().catch(()=>{});
+  let v = 0;
+  const fade = setInterval(()=>{
+    if(v < 0.3){ v += 0.01; music.volume = v; }
+    else clearInterval(fade);
+  },200);
 }
 
-function load() {
+/* -------- SLIDE 1 -------- */
+render(`
+<div class="screen">
+  <div class="container">
+    <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
+    <button onclick="slide2()">right</button>
+    <button onclick="wrong('tum toh potty ho, try again')">naah</button>
+  </div>
+</div>`);
 
-  if (step === 0) {
-    render(`
-      <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>
-      cheesy lagte, right?</p>
-      <button onclick="next()">right</button>
-      <button onclick="wrong('tum toh potty ho, try again')">naah</button>
-    `);
-  }
-
-  else if (step === 1) {
-    render(`
-      <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-      <button onclick="next()">right</button>
-      <button onclick="wrong('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
-    `);
-  }
-
-  else if (step === 2) {
-    render(`
-      <p>
-      but look where we stand today<br><br>
-      Even if I didn’t ask you to be my valentine<br>
-      You stayed. Not just on the good days.<br><br>
-      The year behind was a pretty nightmare<br>
-      But we both stood together<br>
-      Sometimes hating each other, other times loving.<br>
-      Mostly playing around, being goofy
-      </p>
-      <button class="yes" onclick="next()">show me what you mean</button>
-    `);
-  }
-
-  else if (step === 3) {
-    startMusic();
-    render(`
-      <img src="pic1.jpg">
-      <p>kha lugi mac Donald domino zindagibhar tumhare sath, pakki par nakhre obvious</p>
-
-      <img src="pic2.jpg">
-      <p>kaat lugi puri Zindagi metro station p tere sang, tu chahe toh</p>
-
-      <img src="pic3.jpg">
-      <p>Humesha ghusugi tumhare personal space me</p>
-
-      <img src="pic4.jpg">
-      <p>iss din ki trh har din khush rkhne ki koshish rahegi jaan</p>
-
-      <p>Yeh sab kuch ekdum se nahi hua,<br>
-      Dheere Dheere buna hai pyaar ke sath</p>
-
-      <button onclick="next()">true true</button>
-      <button onclick="wrong('abey chup lawdeya')">false</button>
-    `);
-  }
-
-  else if (step === 4) {
-    render(`
-      <p>
-      so here’s my question<br>
-      (you don’t have a choice)<br><br>
-
-      Will you be my valentine, Krish Sharma?<br><br>
-
-      On the good days<br>
-      On the bad days<br>
-      On random ordinary days<br><br>
-
-      Will you stick by my side forever?<br>
-      (chipki rahogi?)<br><br>
-
-      aur koi option hai?
-      </p>
-
-      <button class="yes" onclick="next()">yes</button>
-      <button class="no" style="pointer-events:none;">no</button>
-    `);
-  }
-
-  else {
-    render(`
-      <p>
-      kya be lodu?<br><br>
-      yes daba na
-      </p>
-      <button class="yes">💙</button>
-    `);
-  }
+function slide2(){
+  render(`
+  <div class="screen"><div class="container">
+  <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+  <button onclick="slide3()">right</button>
+  <button onclick="wrong('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
+  </div></div>`);
 }
 
-load();
+function slide3(){
+  render(`
+  <div class="screen"><div class="container">
+  <p>but look where we stand today...<br><br>
+  You stayed. Not just on the good days.<br>
+  We survived the messy days too.<br>
+  Mostly playing around, being goofy ❤️</p>
+  <button class="yes" onclick="memory()">show me what you mean</button>
+  </div></div>`);
+}
+
+/* -------- SLIDESHOW -------- */
+const memories = [
+"pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"
+];
+const texts = [
+"kha lugi mac Donald domino zindagibhar tumhare sath...",
+"kaat lugi puri Zindagi metro station p tere sang...",
+"Humesha ghusugi tumhare personal space me hehe",
+"iss din ki trh har din khush rkhne ki koshish rahegi jaan",
+"boht pasand hai tumhare kandhe pe sar rkhna",
+"sath m cheejiya khana bhi boht pasand hai yaaar"
+];
+
+let i=0;
+function memory(){
+ startMusic();
+ playMemory();
+}
+function playMemory(){
+ render(`<div class="screen"><div class="container">
+ <img class="memory-img" src="${memories[i]}">
+ <p class="memory-text">${texts[i]}</p>
+ <div class="progress-bar" id="bar"></div>
+ </div></div>`);
+ setTimeout(()=>document.getElementById("bar").style.width="100%",50);
+ setTimeout(()=>{
+   i++;
+   if(i < memories.length) playMemory();
+   else afterMemory();
+ },5000);
+}
+
+function afterMemory(){
+ render(`<div class="screen"><div class="container">
+ <p>Yeh sab dheere dheere buna hai pyaar ke sath ❤️</p>
+ <button class="yes" onclick="final()">true true</button>
+ <button onclick="wrong('abey chup lawdeya')">false</button>
+ </div></div>`);
+}
+
+/* -------- FINAL -------- */
+function final(){
+ render(`<div class="screen"><div class="container">
+ <p>Will you be my valentine, Krish Sharma? 💙</p>
+ <button class="yes" onclick="end()">aur koi choice hai?</button>
+ <button class="no" id="noBtn">no</button>
+ </div></div>`);
+ document.getElementById("noBtn").addEventListener("mouseover",moveNo);
+}
+
+function moveNo(e){
+ const btn=e.target;
+ btn.style.position="absolute";
+ btn.style.left=Math.random()*70+"%";
+ btn.style.top=Math.random()*70+"%";
+}
+
+function end(){
+ hearts();
+ render(`<div class="screen"><div class="container">
+ <h2>Hehe knew it 💙</h2>
+ </div></div>`);
+}
+
+function hearts(){
+ setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText="💙";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),4000);
+ },300);
+}
 </script>
 
 </body>
 </html>
+
