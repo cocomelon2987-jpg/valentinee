@@ -139,16 +139,18 @@ button:hover{background:#c94b6a}
 <div id="app"></div>
 
 <script>
-const app=document.getElementById("app");
-const music=document.getElementById("music");
+const app = document.getElementById("app");
+const music = document.getElementById("music");
+
+function render(html){ app.innerHTML = html; }
 
 function startMusic(){
-  music.volume=0;
+  music.volume = 0;
   music.play().catch(()=>{});
-  let v=0;
-  const f=setInterval(()=>{
-    if(v<0.35){v+=0.01;music.volume=v}
-    else clearInterval(f);
+  let v = 0;
+  const fade = setInterval(()=>{
+    if(v < 0.35){ v += 0.01; music.volume = v; }
+    else clearInterval(fade);
   },200);
 }
 
@@ -163,28 +165,43 @@ function popSticker(){
   setTimeout(()=>s.remove(),1000);
 }
 
-/* START */
-app.innerHTML=`
+/* -------- SLIDE 1 -------- */
+render(`
 <div class="screen">
   <div class="box">
     <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
     <button onclick="slide2()">right</button>
     <button onclick="alert('tum toh potty ho, try again')">naah</button>
   </div>
-</div>`;
+</div>`);
 
+/* -------- SLIDE 2 -------- */
 function slide2(){
-  app.innerHTML=`
+  render(`
   <div class="screen">
     <div class="box">
       <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-      <button onclick="startMem()">right</button>
+      <button onclick="slide3()">right</button>
       <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
     </div>
-  </div>`;
+  </div>`);
 }
 
-/* MEMORY */
+/* -------- SLIDE 3 (YOU REMOVED THIS BY MISTAKE) -------- */
+function slide3(){
+  render(`
+  <div class="screen">
+    <div class="box">
+      <p>but look where we stand today...<br><br>
+      You stayed. Not just on the good days.<br>
+      We survived the messy days too.<br>
+      Mostly playing around, being goofy 💗</p>
+      <button onclick="startMem()">show me what you mean</button>
+    </div>
+  </div>`);
+}
+
+/* -------- MEMORY SLIDESHOW -------- */
 const pics=["pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"];
 const texts=[
 "kha lugi mac Donald domino zindagibhar tumhare sath, pakki par nakhre obvious",
@@ -195,42 +212,55 @@ const texts=[
 "sath m cheeziya khana bhi boht pasand hai yaaar"
 ];
 
-let i=0;
+let i = 0;
 
 function startMem(){
   startMusic();
-  app.innerHTML=`<div class="screen"><div class="memory-wrapper" id="mem"></div></div>`;
+  render(`<div class="screen"><div class="memory-wrapper" id="mem"></div></div>`);
   showMem();
 }
 
 function showMem(){
-  if(i>=pics.length){
-    setTimeout(finalScreen,1200);
+  if(i >= pics.length){
+    setTimeout(afterMemory, 1200);
     return;
   }
+
   popSticker();
 
-  const mem=document.getElementById("mem");
-  const card=document.createElement("div");
-  card.className="memory-card";
+  const mem = document.getElementById("mem");
+  const card = document.createElement("div");
+  card.className = "memory-card";
   card.style.setProperty("--rot",(Math.random()*6-3)+"deg");
 
-  card.innerHTML=`
+  card.innerHTML = `
     <img src="${pics[i]}">
     <div class="memory-text">${texts[i]}</div>
   `;
 
-  mem.innerHTML="";
+  mem.innerHTML = "";
   mem.appendChild(card);
 
   setTimeout(()=>card.classList.add("show"),100);
   i++;
-  setTimeout(showMem,2600);
+  setTimeout(showMem, 2600);
 }
 
-/* FINAL */
+/* -------- AFTER MEMORY (THIS WAS MISSING) -------- */
+function afterMemory(){
+  render(`
+  <div class="screen">
+    <div class="box">
+      <p>Yeh sab dheere dheere buna hai pyaar ke sath ❤️</p>
+      <button onclick="finalScreen()">true true</button>
+      <button onclick="alert('abey chup lawdeya')">false</button>
+    </div>
+  </div>`);
+}
+
+/* -------- FINAL -------- */
 function finalScreen(){
-  app.innerHTML=`
+  render(`
   <div class="screen">
     <div class="box">
       <p class="type" id="typeLine"></p>
@@ -238,7 +268,7 @@ function finalScreen(){
       <button onclick="yes()">aur koi option hai?</button>
       <button class="no" id="noBtn">no</button>
     </div>
-  </div>`;
+  </div>`);
 
   typeText("Yeh sab dheere dheere pyaar ke sath buna hai ❤️");
 
@@ -261,12 +291,10 @@ function typeText(text){
 
 function yes(){
   hearts();
-  app.innerHTML=`
-  <div class="screen">
-    <h1>hehe, knew it 💗</h1>
-  </div>`;
+  render(`<div class="screen"><h1>hehe, knew it 💗</h1></div>`);
 }
 
+/* hearts */
 function hearts(){
   setInterval(()=>{
     const h=document.createElement("div");
@@ -281,6 +309,7 @@ function hearts(){
 
 </body>
 </html>
+
 
 
 
