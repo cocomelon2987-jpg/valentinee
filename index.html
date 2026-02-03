@@ -6,107 +6,132 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  overflow: hidden;
-  background: radial-gradient(circle at top left, #ffd6e0, #f9f3ff, #dff6ff);
+:root{
+  --pink:#f6b7c9;
+  --rose:#e88aa5;
+  --deep:#c94b6a;
+  --cream:#fff7f9;
 }
 
-/* floating romantic blobs */
-body::before, body::after {
-  content: "";
-  position: fixed;
-  width: 500px;
-  height: 500px;
-  background: rgba(255,255,255,0.35);
-  border-radius: 50%;
-  filter: blur(120px);
-  animation: floatBg 18s infinite alternate ease-in-out;
-  z-index: -1;
-}
-body::after {
-  top: 50%;
-  left: 60%;
-  animation-delay: 5s;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:
+    linear-gradient(rgba(255,230,238,0.65), rgba(255,230,238,0.65)),
+    url("bg.jpg") center/cover no-repeat;
+  overflow:hidden;
 }
 
-@keyframes floatBg {
-  from { transform: translate(-50px, -50px); }
-  to { transform: translate(80px, 60px); }
+.screen{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
 }
 
-.screen {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.card{
+  width:100%;
+  max-width:900px;
+  height:85vh;
+  background:rgba(255,255,255,0.85);
+  border-radius:26px;
+  padding:30px;
+  position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,0.18);
+  overflow:hidden;
 }
 
-.container {
-  max-width: 650px;
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(10px);
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-  text-align: center;
-  animation: fadeSlide 0.8s ease;
+.center{text-align:center}
+
+button{
+  padding:12px 28px;
+  border:none;
+  border-radius:30px;
+  background:var(--rose);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  margin:10px;
 }
 
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+button:hover{background:var(--deep)}
+
+.no{
+  background:#ffdbe6;
+  color:#444;
+  position:absolute;
 }
 
-button {
-  margin: 12px;
-  padding: 12px 26px;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  cursor: pointer;
+/* MEMORY */
+.memory-area{
+  position:absolute;
+  inset:0;
+  padding:40px;
 }
 
-.yes { background: #ff7aa2; color: white; }
-.no { background: #ddd; position: relative; }
-
-.memory-img {
-  max-width: 100%;
-  border-radius: 14px;
-  margin-bottom: 15px;
-  opacity: 0;
-  transform: scale(0.96);
-  animation: imgIn 1s ease forwards;
-}
-.memory-text {
-  opacity: 0;
-  animation: textIn 1.2s ease forwards;
-  animation-delay: 0.4s;
+.memory-img{
+  position:absolute;
+  width:220px;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.25);
+  opacity:0;
+  transform:scale(0.9) rotate(0deg);
+  transition:all 1s ease;
 }
 
-@keyframes imgIn { to { opacity:1; transform:scale(1);} }
-@keyframes textIn { to { opacity:1;} }
-
-.progress-bar {
-  height: 6px;
-  background: #ffd1dc;
-  width: 0%;
-  border-radius: 10px;
-  margin-top: 15px;
-  transition: width 5s linear;
+.memory-img.show{
+  opacity:1;
+  transform:scale(1) rotate(var(--rot));
 }
 
-.heart {
-  position: fixed;
-  bottom: -20px;
-  font-size: 22px;
-  animation: float 4s linear infinite;
+.memory-text{
+  position:absolute;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--cream);
+  padding:14px 22px;
+  border-radius:18px;
+  font-size:18px;
+  opacity:0;
+  transition:opacity 1s ease;
 }
-@keyframes float {
-  to { transform: translateY(-100vh); opacity: 0; }
+
+.memory-text.show{opacity:1}
+
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(255,247,249,0.92);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  text-align:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 2s ease;
+}
+
+.overlay.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+h1,h2,p{margin:12px 0}
+
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:22px;
+  animation:float 4s linear infinite;
+}
+
+@keyframes float{
+  to{transform:translateY(-100vh);opacity:0}
 }
 </style>
 </head>
@@ -114,131 +139,133 @@ button {
 <body>
 
 <audio id="music" src="bg-music.mp3" loop></audio>
-<div id="app"></div>
+
+<div class="screen">
+  <div class="card" id="app"></div>
+</div>
 
 <script>
 const app = document.getElementById("app");
 const music = document.getElementById("music");
 
-function render(html){ app.innerHTML = html; }
-function wrong(msg){ alert(msg); }
-
-function startMusic(){
+function fadeMusic(){
   music.volume = 0;
   music.play().catch(()=>{});
   let v = 0;
-  const fade = setInterval(()=>{
-    if(v < 0.3){ v += 0.01; music.volume = v; }
-    else clearInterval(fade);
+  const f = setInterval(()=>{
+    if(v<0.35){ v+=0.01; music.volume=v; }
+    else clearInterval(f);
   },200);
 }
 
-/* -------- SLIDE 1 -------- */
-render(`
-<div class="screen">
-  <div class="container">
-    <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
-    <button onclick="slide2()">right</button>
-    <button onclick="wrong('tum toh potty ho, try again')">naah</button>
-  </div>
-</div>`);
+/* START */
+app.innerHTML = `
+<div class="center">
+  <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
+  <button onclick="step2()">right</button>
+  <button onclick="alert('tum toh potty ho, try again')">naah</button>
+</div>
+`;
 
-function slide2(){
-  render(`
-  <div class="screen"><div class="container">
-  <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-  <button onclick="slide3()">right</button>
-  <button onclick="wrong('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
-  </div></div>`);
+function step2(){
+  app.innerHTML = `
+  <div class="center">
+    <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+    <button onclick="startMemories()">right</button>
+    <button onclick="alert('tum toh geeli wali potti ho')">naah</button>
+  </div>`;
 }
 
-function slide3(){
-  render(`
-  <div class="screen"><div class="container">
-  <p>but look where we stand today...<br><br>
-  You stayed. Not just on the good days.<br>
-  We survived the messy days too.<br>
-  Mostly playing around, being goofy ❤️</p>
-  <button class="yes" onclick="memory()">show me what you mean</button>
-  </div></div>`);
-}
-
-/* -------- SLIDESHOW -------- */
-const memories = [
-"pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"
-];
+/* MEMORY LANE */
+const pics = ["pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"];
 const texts = [
-"kha lugi mac Donald domino zindagibhar tumhare sath...",
-"kaat lugi puri Zindagi metro station p tere sang...",
-"Humesha ghusugi tumhare personal space me hehe",
-"iss din ki trh har din khush rkhne ki koshish rahegi jaan",
-"boht pasand hai tumhare kandhe pe sar rkhna",
-"sath m cheejiya khana bhi boht pasand hai yaaar"
+"kha lugi mac Donald domino zindagibhar tumhare sath",
+"metro station pe puri zindagi kaat lugi tumhare sang",
+"personal space me ghusna toh forever plan hai",
+"har din thoda sa zyada khush rakhne ki koshish",
+"tumhare kandhe pe sar = safe place",
+"sath me cheeziyan khana >>>"
 ];
 
-let i=0;
-function memory(){
- startMusic();
- playMemory();
-}
-function playMemory(){
- render(`<div class="screen"><div class="container">
- <img class="memory-img" src="${memories[i]}">
- <p class="memory-text">${texts[i]}</p>
- <div class="progress-bar" id="bar"></div>
- </div></div>`);
- setTimeout(()=>document.getElementById("bar").style.width="100%",50);
- setTimeout(()=>{
-   i++;
-   if(i < memories.length) playMemory();
-   else afterMemory();
- },5000);
+let idx = 0;
+
+function startMemories(){
+  fadeMusic();
+  app.innerHTML = `<div class="memory-area" id="mem"></div>`;
+  showMemory();
 }
 
-function afterMemory(){
- render(`<div class="screen"><div class="container">
- <p>Yeh sab dheere dheere buna hai pyaar ke sath ❤️</p>
- <button class="yes" onclick="final()">true true</button>
- <button onclick="wrong('abey chup lawdeya')">false</button>
- </div></div>`);
+function showMemory(){
+  if(idx >= pics.length){
+    setTimeout(finalOverlay,1500);
+    return;
+  }
+
+  const mem = document.getElementById("mem");
+  const img = document.createElement("img");
+  img.src = pics[idx];
+  img.className = "memory-img";
+  img.style.left = Math.random()*60 + "%";
+  img.style.top = Math.random()*50 + "%";
+  img.style.setProperty("--rot",(Math.random()*10-5)+"deg");
+
+  const txt = document.createElement("div");
+  txt.className = "memory-text";
+  txt.innerText = texts[idx];
+
+  mem.appendChild(img);
+  mem.appendChild(txt);
+
+  setTimeout(()=>{
+    img.classList.add("show");
+    txt.classList.add("show");
+  },200);
+
+  idx++;
+  setTimeout(showMemory,2200);
 }
 
-/* -------- FINAL -------- */
-function final(){
- render(`<div class="screen"><div class="container">
- <p>Will you be my valentine, Krish Sharma? 💙</p>
- <button class="yes" onclick="end()">aur koi choice hai?</button>
- <button class="no" id="noBtn">no</button>
- </div></div>`);
- document.getElementById("noBtn").addEventListener("mouseover",moveNo);
+/* FINAL */
+function finalOverlay(){
+  const overlay = document.createElement("div");
+  overlay.className = "overlay show";
+  overlay.innerHTML = `
+    <h2>yeh sab dheere dheere pyaar ke saath buna hai ❤️</h2>
+    <p>soooo… will you be my valentine,<br><b>Krish Sharma?</b></p>
+    <button onclick="yes()">aur koi option hai?</button>
+    <button class="no" id="noBtn">no</button>
+  `;
+  app.appendChild(overlay);
+
+  const no = overlay.querySelector("#noBtn");
+  no.addEventListener("mouseover",()=>{
+    no.style.left = Math.random()*70 + "%";
+    no.style.top = Math.random()*70 + "%";
+  });
 }
 
-function moveNo(e){
- const btn=e.target;
- btn.style.position="absolute";
- btn.style.left=Math.random()*70+"%";
- btn.style.top=Math.random()*70+"%";
-}
-
-function end(){
- hearts();
- render(`<div class="screen"><div class="container">
- <h2>Hehe knew it 💙</h2>
- </div></div>`);
+function yes(){
+  hearts();
+  app.innerHTML = `
+  <div class="center">
+    <h1>hehe, knew it 💗</h1>
+  </div>`;
 }
 
 function hearts(){
- setInterval(()=>{
-  const h=document.createElement("div");
-  h.className="heart";
-  h.innerText="💙";
-  h.style.left=Math.random()*100+"vw";
-  document.body.appendChild(h);
-  setTimeout(()=>h.remove(),4000);
- },300);
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText="💗";
+    h.style.left=Math.random()*100+"vw";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),4000);
+  },300);
 }
 </script>
 
 </body>
 </html>
+
+
 
