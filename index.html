@@ -2,26 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Valentine?</title>
+<title>Valentine</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- handwritten font -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --pink:#f6b7c9;
-  --rose:#e88aa5;
-  --deep:#c94b6a;
-  --cream:#fff7f9;
-}
-
-*{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:'Segoe UI',sans-serif;
+  font-family:'Patrick Hand', cursive;
   background:
-    linear-gradient(rgba(255,230,238,0.65), rgba(255,230,238,0.65)),
+    linear-gradient(rgba(255,230,238,0.75),rgba(255,230,238,0.75)),
     url("bg.jpg") center/cover no-repeat;
   overflow:hidden;
+}
+
+/* subtle paper texture */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.02),
+      rgba(0,0,0,0.02) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  pointer-events:none;
 }
 
 .screen{
@@ -29,35 +39,26 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
+  text-align:center;
   padding:20px;
 }
 
-.card{
-  width:100%;
-  max-width:900px;
-  height:85vh;
-  background:rgba(255,255,255,0.85);
-  border-radius:26px;
-  padding:30px;
-  position:relative;
-  box-shadow:0 30px 70px rgba(0,0,0,0.18);
-  overflow:hidden;
+.box{
+  max-width:600px;
 }
 
-.center{text-align:center}
-
 button{
-  padding:12px 28px;
+  padding:12px 26px;
   border:none;
-  border-radius:30px;
-  background:var(--rose);
+  border-radius:25px;
+  background:#e88aa5;
   color:white;
-  font-size:16px;
+  font-size:18px;
   cursor:pointer;
   margin:10px;
 }
 
-button:hover{background:var(--deep)}
+button:hover{background:#c94b6a}
 
 .no{
   background:#ffdbe6;
@@ -66,70 +67,66 @@ button:hover{background:var(--deep)}
 }
 
 /* MEMORY */
-.memory-area{
-  position:absolute;
-  inset:0;
-  padding:40px;
+.memory-wrapper{
+  position:relative;
+  width:100%;
+  height:100%;
 }
 
-.memory-img{
+.memory-card{
   position:absolute;
-  width:220px;
-  border-radius:16px;
-  box-shadow:0 12px 28px rgba(0,0,0,0.25);
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(0.9);
   opacity:0;
-  transform:scale(0.9) rotate(0deg);
   transition:all 1s ease;
 }
 
-.memory-img.show{
+.memory-card.show{
   opacity:1;
-  transform:scale(1) rotate(var(--rot));
+  transform:translate(-50%,-50%) scale(1);
+}
+
+.memory-card img{
+  width:260px;
+  border-radius:16px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.25);
+  transform:rotate(var(--rot));
 }
 
 .memory-text{
-  position:absolute;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--cream);
-  padding:14px 22px;
-  border-radius:18px;
-  font-size:18px;
-  opacity:0;
-  transition:opacity 1s ease;
+  margin-top:14px;
+  background:#fff7f9;
+  padding:12px 18px;
+  border-radius:16px;
+  font-size:20px;
 }
 
-.memory-text.show{opacity:1}
-
-.overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(255,247,249,0.92);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  text-align:center;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 2s ease;
+/* TYPEWRITER (used ONCE) */
+.type{
+  border-right:2px solid #c94b6a;
+  white-space:nowrap;
+  overflow:hidden;
 }
 
-.overlay.show{
-  opacity:1;
-  pointer-events:auto;
+/* STICKER */
+.sticker{
+  position:fixed;
+  font-size:36px;
+  animation:pop 0.6s ease;
+}
+@keyframes pop{
+  from{transform:scale(0)}
+  to{transform:scale(1)}
 }
 
-h1,h2,p{margin:12px 0}
-
+/* HEARTS */
 .heart{
   position:fixed;
   bottom:-20px;
   font-size:22px;
   animation:float 4s linear infinite;
 }
-
 @keyframes float{
   to{transform:translateY(-100vh);opacity:0}
 }
@@ -139,115 +136,133 @@ h1,h2,p{margin:12px 0}
 <body>
 
 <audio id="music" src="bg-music.mp3" loop></audio>
-
-<div class="screen">
-  <div class="card" id="app"></div>
-</div>
+<div id="app"></div>
 
 <script>
-const app = document.getElementById("app");
-const music = document.getElementById("music");
+const app=document.getElementById("app");
+const music=document.getElementById("music");
 
-function fadeMusic(){
-  music.volume = 0;
+function startMusic(){
+  music.volume=0;
   music.play().catch(()=>{});
-  let v = 0;
-  const f = setInterval(()=>{
-    if(v<0.35){ v+=0.01; music.volume=v; }
+  let v=0;
+  const f=setInterval(()=>{
+    if(v<0.35){v+=0.01;music.volume=v}
     else clearInterval(f);
   },200);
 }
 
-/* START */
-app.innerHTML = `
-<div class="center">
-  <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
-  <button onclick="step2()">right</button>
-  <button onclick="alert('tum toh potty ho, try again')">naah</button>
-</div>
-`;
+/* sticker pop */
+function popSticker(){
+  const s=document.createElement("div");
+  s.className="sticker";
+  s.innerText="💗";
+  s.style.left=Math.random()*80+"vw";
+  s.style.top=Math.random()*80+"vh";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),1000);
+}
 
-function step2(){
-  app.innerHTML = `
-  <div class="center">
-    <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-    <button onclick="startMemories()">right</button>
-    <button onclick="alert('tum toh geeli wali potti ho')">naah</button>
+/* START */
+app.innerHTML=`
+<div class="screen">
+  <div class="box">
+    <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
+    <button onclick="slide2()">right</button>
+    <button onclick="alert('tum toh potty ho, try again')">naah</button>
+  </div>
+</div>`;
+
+function slide2(){
+  app.innerHTML=`
+  <div class="screen">
+    <div class="box">
+      <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+      <button onclick="startMem()">right</button>
+      <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
+    </div>
   </div>`;
 }
 
-/* MEMORY LANE */
-const pics = ["pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"];
-const texts = [
-"kha lugi mac Donald domino zindagibhar tumhare sath",
-"metro station pe puri zindagi kaat lugi tumhare sang",
-"personal space me ghusna toh forever plan hai",
-"har din thoda sa zyada khush rakhne ki koshish",
-"tumhare kandhe pe sar = safe place",
-"sath me cheeziyan khana >>>"
+/* MEMORY */
+const pics=["pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"];
+const texts=[
+"kha lugi mac Donald domino zindagibhar tumhare sath, pakki par nakhre obvious",
+"kaat lugi puri Zindagi metro station p tere sang, tu chahe toh",
+"Humesha ghusugi tumhare personal space me. IT mai bhi chain se ni jeene diya tha na hehe",
+"iss din ki trh har din khush rakhne ki koshish rahegi jaan",
+"boht pasand hai tumhare kandhe pe sar rakhna, forever thing bana do pls pls",
+"sath m cheeziya khana bhi boht pasand hai yaaar"
 ];
 
-let idx = 0;
+let i=0;
 
-function startMemories(){
-  fadeMusic();
-  app.innerHTML = `<div class="memory-area" id="mem"></div>`;
-  showMemory();
+function startMem(){
+  startMusic();
+  app.innerHTML=`<div class="screen"><div class="memory-wrapper" id="mem"></div></div>`;
+  showMem();
 }
 
-function showMemory(){
-  if(idx >= pics.length){
-    setTimeout(finalOverlay,1500);
+function showMem(){
+  if(i>=pics.length){
+    setTimeout(finalScreen,1200);
     return;
   }
+  popSticker();
 
-  const mem = document.getElementById("mem");
-  const img = document.createElement("img");
-  img.src = pics[idx];
-  img.className = "memory-img";
-  img.style.left = Math.random()*60 + "%";
-  img.style.top = Math.random()*50 + "%";
-  img.style.setProperty("--rot",(Math.random()*10-5)+"deg");
+  const mem=document.getElementById("mem");
+  const card=document.createElement("div");
+  card.className="memory-card";
+  card.style.setProperty("--rot",(Math.random()*6-3)+"deg");
 
-  const txt = document.createElement("div");
-  txt.className = "memory-text";
-  txt.innerText = texts[idx];
+  card.innerHTML=`
+    <img src="${pics[i]}">
+    <div class="memory-text">${texts[i]}</div>
+  `;
 
-  mem.appendChild(img);
-  mem.appendChild(txt);
+  mem.innerHTML="";
+  mem.appendChild(card);
 
-  setTimeout(()=>{
-    img.classList.add("show");
-    txt.classList.add("show");
-  },200);
-
-  idx++;
-  setTimeout(showMemory,2200);
+  setTimeout(()=>card.classList.add("show"),100);
+  i++;
+  setTimeout(showMem,2600);
 }
 
 /* FINAL */
-function finalOverlay(){
-  const overlay = document.createElement("div");
-  overlay.className = "overlay show";
-  overlay.innerHTML = `
-    <h2>yeh sab dheere dheere pyaar ke saath buna hai ❤️</h2>
-    <p>soooo… will you be my valentine,<br><b>Krish Sharma?</b></p>
-    <button onclick="yes()">aur koi option hai?</button>
-    <button class="no" id="noBtn">no</button>
-  `;
-  app.appendChild(overlay);
+function finalScreen(){
+  app.innerHTML=`
+  <div class="screen">
+    <div class="box">
+      <p class="type" id="typeLine"></p>
+      <p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
+      <button onclick="yes()">aur koi option hai?</button>
+      <button class="no" id="noBtn">no</button>
+    </div>
+  </div>`;
 
-  const no = overlay.querySelector("#noBtn");
+  typeText("Yeh sab dheere dheere pyaar ke sath buna hai ❤️");
+
+  const no=document.getElementById("noBtn");
   no.addEventListener("mouseover",()=>{
-    no.style.left = Math.random()*70 + "%";
-    no.style.top = Math.random()*70 + "%";
+    no.style.left=Math.random()*70+"%";
+    no.style.top=Math.random()*70+"%";
   });
+}
+
+function typeText(text){
+  let j=0;
+  const el=document.getElementById("typeLine");
+  const t=setInterval(()=>{
+    el.textContent+=text[j];
+    j++;
+    if(j>=text.length) clearInterval(t);
+  },70);
 }
 
 function yes(){
   hearts();
-  app.innerHTML = `
-  <div class="center">
+  app.innerHTML=`
+  <div class="screen">
     <h1>hehe, knew it 💗</h1>
   </div>`;
 }
@@ -266,6 +281,8 @@ function hearts(){
 
 </body>
 </html>
+
+
 
 
 
