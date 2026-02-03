@@ -203,9 +203,13 @@ function showMem(){
   card.style.zIndex=i;
 
   /* CLEAN SCRAPBOOK POSITIONING */
-  const offsetX = (i * 35) - 80;   // spread horizontally
-  const offsetY = (i * 18) - 60;   // slight downward stack
-  const rot = (Math.random()*6-3); // mild tilt
+  const spread = 120;              // wider spread
+const row = Math.floor(i/3);     // new row every 3 photos
+const col = i%3;
+
+const offsetX = (col-1) * spread;     // left, center, right
+const offsetY = row * 90 - 80;        // vertical stacking rows
+const rot = (Math.random()*8-4);
 
   card.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${rot}deg)`;
 
@@ -218,7 +222,7 @@ function showMem(){
   setTimeout(()=>card.classList.add("show"),100);
 
   i++;
-  setTimeout(showMem,2000);
+  setTimeout(showMem,5000);
 }
 
 function fadeMemories(){
@@ -265,6 +269,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
