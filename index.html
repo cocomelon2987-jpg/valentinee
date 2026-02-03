@@ -37,6 +37,7 @@ body::after{
 
 /* aesthetic letter box */
 .box{
+  position: relative;   /* ⭐ ADD THIS LINE */
   max-width:650px;
   background:linear-gradient(145deg,#ffd6e6,#ffeaf2);
   padding:32px 38px;
@@ -45,7 +46,6 @@ body::after{
   backdrop-filter: blur(6px);
   border:1px solid rgba(255,255,255,0.6);
 }
-
 button{
   padding:12px 26px;
   border:none;
@@ -226,14 +226,31 @@ const rot = (Math.random()*8-4);
 }
 
 function fadeMemories(){
-document.querySelectorAll(".memory-card").forEach(c=>c.classList.add("fade-out"));
-setTimeout(()=>{
-render(`<div class="screen"><div class="box">
-<h2 id="loveLine"></h2>
-<button onclick="finalScreen()">true true</button>
-</div></div>`);
-typeWriter("Yeh sab dheere dheere buna hai pyaar ke sath ❤️","loveLine",40);
-},1200);
+  document.querySelectorAll(".memory-card").forEach(c=>c.classList.add("fade-out"));
+
+  setTimeout(()=>{
+    render(`
+      <div class="screen">
+        <div class="box">
+          <h2 id="loveLine"></h2>
+
+          <div class="btnRow">
+            <button onclick="finalScreen()">true true</button>
+            <button id="noLoveBtn">no</button>
+          </div>
+
+        </div>
+      </div>
+    `);
+
+    typeWriter("Yeh sab dheere dheere buna hai pyaar ke sath ❤️","loveLine",40);
+
+    // 👉 FIRST NO LOGIC (does NOT run away)
+    document.getElementById("noLoveBtn").addEventListener("click",()=>{
+      alert("abe chup be lawdeya");
+    });
+
+  },1200);
 }
 
 /* FINAL */
@@ -269,6 +286,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
