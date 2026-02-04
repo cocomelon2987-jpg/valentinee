@@ -8,13 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
+/* ===== BASE ===== */
 body{
   margin:0;
   font-family:'Poppins',sans-serif;
   background:
     linear-gradient(rgba(255,230,238,0.75),rgba(255,230,238,0.75)),
     url("bg.jpg") center/cover no-repeat;
-  overflow:hidden;
+  overflow-x:hidden;
 }
 
 /* paper grain */
@@ -22,12 +23,19 @@ body::after{
   content:"";
   position:fixed;
   inset:0;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.02),rgba(0,0,0,0.02) 1px,transparent 1px,transparent 3px);
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.02),
+    rgba(0,0,0,0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   pointer-events:none;
 }
 
+/* ===== SCREEN + BOX ===== */
 .screen{
-  height:100vh;
+  min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -35,7 +43,6 @@ body::after{
   padding:20px;
 }
 
-/* aesthetic letter box */
 .box{
   max-width:650px;
   background:linear-gradient(145deg,#ffd6e6,#ffeaf2);
@@ -44,9 +51,9 @@ body::after{
   box-shadow:0 25px 60px rgba(233,120,150,0.35);
   backdrop-filter: blur(6px);
   border:1px solid rgba(255,255,255,0.6);
-
-  position:relative;   /* ADD THIS LINE */
+  position:relative;
 }
+
 button{
   padding:12px 26px;
   border:none;
@@ -60,49 +67,111 @@ button{
 button:hover{background:#c94b6a}
 .no{background:#ffdbe6;color:#444;position:absolute}
 
-/* SCRAPBOOK MEMORY */
-.memory-wrapper{position:relative;width:100%;height:100%}
+/* ===== MEMORY LANE ===== */
+.memory-wrapper{
+  width:100%;
+  max-width:900px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:80px;
+  padding:80px 20px;
+}
 
+/* ===== PINK TORN PAPER CARD ===== */
 .memory-card{
-  position:absolute;
-  left:50%;
-  top:50%;
+  position:relative;
+  max-width:320px;
+  align-self:center;
+  background:linear-gradient(145deg,#ffd1e3,#ffe6f0);
+  padding:18px 18px 26px;
+  border-radius:18px;
+  box-shadow:
+    0 20px 40px rgba(232,120,165,0.35),
+    inset 0 0 0 2px rgba(255,255,255,0.5);
+
+  clip-path: polygon(
+    0% 4%, 4% 0%, 96% 0%, 100% 4%,
+    100% 96%, 96% 100%, 4% 100%, 0% 96%
+  );
+
   opacity:0;
-  transition:all 1s ease;
+  transform:translateY(60px) scale(0.9);
+  transition:all 0.9s cubic-bezier(.18,.89,.32,1.28);
 }
 
-.memory-card.show{
-  opacity:1;
+/* torn edge illusion */
+.memory-card::before{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  background:
+    radial-gradient(circle at 10% 20%,transparent 12px,#ffd1e3 13px),
+    radial-gradient(circle at 90% 80%,transparent 10px,#ffd1e3 11px);
+  z-index:-1;
+  opacity:0.6;
 }
 
-/* polaroid */
+/* image */
 .memory-card img{
-  width:230px;
-  background:white;
-  padding:10px 10px 30px;
-  border-radius:6px;
-  box-shadow:0 15px 35px rgba(0,0,0,0.3);
+  width:100%;
+  border-radius:12px;
+  display:block;
 }
 
+/* handwritten text */
 .memory-text{
   font-family:'Patrick Hand',cursive;
-  margin-top:8px;
-  font-size:20px;
+  text-align:center;
+  margin-top:14px;
+  font-size:22px;
+  line-height:1.45;
+  color:#6a1b3f;
 }
 
+/* animate in */
+.memory-card.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+/* zig-zag scrapbook */
+.memory-card:nth-child(odd){
+  align-self:flex-start;
+}
+.memory-card:nth-child(even){
+  align-self:flex-end;
+}
+
+/* fade out */
 .fade-out{
   opacity:0!important;
-  transform:scale(0.5) translateY(-40px);
+  transform:scale(0.6) translateY(-40px);
 }
 
-/* sticker */
-.sticker{position:fixed;font-size:36px;animation:pop .6s ease}
-@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+/* ===== STICKERS ===== */
+.sticker{
+  position:fixed;
+  font-size:36px;
+  animation:pop .6s ease;
+}
+@keyframes pop{
+  from{transform:scale(0)}
+  to{transform:scale(1)}
+}
 
-/* hearts */
-.heart{position:fixed;bottom:-20px;font-size:22px;animation:float 4s linear infinite}
-@keyframes float{to{transform:translateY(-100vh);opacity:0}}
+/* ===== HEARTS ===== */
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:22px;
+  animation:float 4s linear infinite;
+}
+@keyframes float{
+  to{transform:translateY(-100vh);opacity:0}
+}
 </style>
+
 </head>
 
 <body>
@@ -203,16 +272,8 @@ function showMem(){
   card.className="memory-card";
   card.style.zIndex=i;
 
-  /* CLEAN SCRAPBOOK POSITIONING */
-  const spread = 120;              // wider spread
-const row = Math.floor(i/3);     // new row every 3 photos
-const col = i%3;
+  card.style.transform = `rotate(${Math.random()*6-3}deg)`;
 
-const offsetX = (col-1) * spread;     // left, center, right
-const offsetY = row * 90 - 80;        // vertical stacking rows
-const rot = (Math.random()*8-4);
-
-  card.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${rot}deg)`;
 
   card.innerHTML = `
     <img src="${pics[i]}">
@@ -223,7 +284,7 @@ const rot = (Math.random()*8-4);
   setTimeout(()=>card.classList.add("show"),100);
 
   i++;
-  setTimeout(showMem,5000);
+  setTimeout(showMem,3000);
 }
 
 function fadeMemories(){
@@ -287,6 +348,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
