@@ -65,7 +65,13 @@ button{
   margin:10px;
 }
 button:hover{background:#c94b6a}
-.no{background:#ffdbe6;color:#444;position:relative}
+.no{
+  background:#f5a9c4;   /* softer pink to match theme */
+  color:white;           /* consistent with other buttons */
+  position:absolute;     /* allows free movement inside parent */
+  pointer-events:none;   /* makes button NOT clickable */
+}
+
 
 /* ===== MEMORY LANE ===== */
 .memory-wrapper{
@@ -176,7 +182,10 @@ button:hover{background:#c94b6a}
   justify-content:center;
   gap:20px;
   margin-top:20px;
+  position:relative; /* parent for absolute positioning */
+  height:100px;      /* give space for vertical movement */
 }
+
 
 /* Adjust the "no" button styling */
 .no{
@@ -345,9 +354,12 @@ render(`
 </div></div>`);
 
 const no=document.getElementById("noBtn");
+// when mouse goes near, move to a random position inside btnRow
 no.addEventListener("mouseover",()=>{
-no.style.left=Math.random()*70+"%";
-no.style.top=Math.random()*70+"%";
+  // random horizontal position (0–80%)
+  no.style.left=Math.random()*80+"%";
+  // random vertical position (0–60%)
+  no.style.top=Math.random()*60+"%";
 });
 }
 
@@ -369,6 +381,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
