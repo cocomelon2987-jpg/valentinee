@@ -65,7 +65,7 @@ button{
   margin:10px;
 }
 button:hover{background:#c94b6a}
-.no{background:#ffdbe6;color:#444;position:absolute}
+.no{background:#ffdbe6;color:#444;position:relative}
 
 /* ===== MEMORY LANE ===== */
 .memory-wrapper{
@@ -332,14 +332,11 @@ function fadeMemories(){
 
 /* FINAL */
 function finalScreen(){
-render(`<div class="screen"><div class="box">
 render(`
   <div class="screen">
     <div class="box">
 
 <p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
-<button onclick="yes()">aur koi option hai?</button>
-<button class="no" id="noBtn">no</button>
 <div class="btnRow">
   <button onclick="yes()">aur koi option hai?</button>
   <button class="no" id="noBtn">no</button>
