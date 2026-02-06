@@ -450,6 +450,7 @@ let i=0;
 
 /* ===== REPLACED startMem to start music immediately after click ===== */
 function startMem(){
+  if (window.__cpScrollHint) window.__cpScrollHint.show();
   // create and show a tiny indicator next to the button row
   if (!document.querySelector(".playing-indicator")) {
     const ind = document.createElement("span");
@@ -721,13 +722,6 @@ function hearts(){
     }, 10000);
   }
 
-  // Start observing on DOMContentLoaded or immediately if already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', observeForMemoryScreen);
-  } else {
-    observeForMemoryScreen();
-  }
-
   // Expose a small API for manual control if needed (optional)
   window.__cpScrollHint = {
     show: () => { createDecorations(); createScrollHint(); },
@@ -737,6 +731,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
