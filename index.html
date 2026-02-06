@@ -182,7 +182,7 @@ button:hover{background:#c94b6a}
 .no{
   background:#f5a9c4;   /* softer pink to match theme */
   color:white;           /* consistent with other buttons */
-  position:relative;     /* keep inside container */
+  position:absolute;   /* allows free movement inside box */
 }
 
 </style>
@@ -345,9 +345,25 @@ render(`
 </div></div>`);
 
 const no=document.getElementById("noBtn");
+const box=document.querySelector(".box");
+
+// make button unclickable
+no.addEventListener("click",(e)=>e.preventDefault());
+
+// move freely inside box
 no.addEventListener("mouseover",()=>{
-no.style.left=Math.random()*70+"%";
-no.style.top=Math.random()*70+"%";
+  const boxRect = box.getBoundingClientRect();
+  const btnRect = no.getBoundingClientRect();
+
+  // calculate max X and Y so button stays inside
+  const maxX = boxRect.width - btnRect.width;
+  const maxY = boxRect.height - btnRect.height;
+
+  const randX = Math.random() * maxX;
+  const randY = Math.random() * maxY;
+
+  no.style.left = randX + "px";
+  no.style.top = randY + "px";
 });
 }
 
@@ -369,6 +385,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
