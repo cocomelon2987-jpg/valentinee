@@ -204,7 +204,95 @@ button:hover{background:#c94b6a}
   50% { transform:scale(1.25); }
   100% { transform:scale(1); }
 }
+/* ===== Copilot extensions: floating decorations + scroll hint ===== */
+/* Floating side decorations (left and right) */
+.cp-float-deco {
+  position: fixed;
+  top: 30%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#ffd6e6,#ffeaf2);
+  box-shadow: 0 6px 18px rgba(233,120,150,0.18);
+  pointer-events: none;
+  opacity: 0.95;
+  z-index: 999; /* above content but below UI modals */
+  transform: translateY(0);
+  will-change: transform, opacity;
+  animation: cp-deco-float 6s ease-in-out infinite;
+}
 
+/* Slight size/opacity variation for visual interest */
+.cp-float-deco.cp-small { width:12px; height:12px; opacity:0.85; }
+.cp-float-deco.cp-large { width:22px; height:22px; opacity:1; }
+
+/* Left and right anchors */
+.cp-float-left  { left: 12px; }
+.cp-float-right { right: 12px; }
+
+/* Gentle float animation */
+@keyframes cp-deco-float {
+  0%   { transform: translateY(0) translateX(0) rotate(0deg); }
+  50%  { transform: translateY(-18px) translateX(4px) rotate(6deg); }
+  100% { transform: translateY(0) translateX(0) rotate(0deg); }
+}
+
+/* Scroll hint container near bottom center */
+.cp-scroll-hint {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  bottom: 28px;
+  background: rgba(255,255,255,0.92);
+  color: #6a1b3f;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 16px;
+  padding: 10px 14px;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(233,120,150,0.12);
+  z-index: 1000;
+  pointer-events: none; /* must not block clicks */
+  opacity: 1;
+  transition: opacity 420ms ease, transform 420ms cubic-bezier(.18,.89,.32,1.28);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* small heart icon inside hint */
+.cp-scroll-hint .cp-hint-heart {
+  font-size: 18px;
+  transform-origin: center;
+  display:inline-block;
+  animation: cp-heart-pulse 1.2s ease-in-out infinite;
+}
+
+/* soft pulsing / bouncing of the whole hint */
+@keyframes cp-heart-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* subtle up/down bounce for the hint container */
+@keyframes cp-hint-bounce {
+  0%   { transform: translateX(-50%) translateY(0); }
+  50%  { transform: translateX(-50%) translateY(-8px); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+.cp-scroll-hint.cp-bounce { animation: cp-hint-bounce 2.2s ease-in-out infinite; }
+
+/* Hidden state after user scrolls */
+.cp-hidden {
+  opacity: 0 !important;
+  transform: translateX(-50%) translateY(8px) !important;
+  pointer-events: none !important;
+}
+
+/* Accessibility: reduce motion respects */
+@media (prefers-reduced-motion: reduce) {
+  .cp-float-deco, .cp-scroll-hint { animation: none !important; transition: none !important; }
+}
 </style>
 
 </head>
@@ -494,7 +582,139 @@ function hearts(){
 </script>
 
 </body>
+  <script>
+(function(){
+  const MAX_DECOS = 6;            // performance limit
+  const SCROLL_HIDE_PX = 200;     // hide after user scrolls 200px
+  const DECO_IDS = [];            // track created elements
+  let hintEl = null;
+  let hidden = false;
+  let decoCreated = false;
+
+  // Utility to create a decoration element
+  function createDeco(side, sizeClass, topOffset) {
+    const d = document.createElement('div');
+    d.className = `cp-float-deco ${side} ${sizeClass}`;
+    d.style.top = (topOffset || (30 + Math.random()*40)) + '%';
+    // slight random animation delay so they don't move in sync
+    d.style.animationDelay = (Math.random()*2) + 's';
+    d.setAttribute('aria-hidden','true');
+    document.body.appendChild(d);
+    DECO_IDS.push(d);
+    return d;
+  }
+
+  // Create a small set of floating decorations (left and right)
+  function createDecorations() {
+    if (decoCreated) return;
+    decoCreated = true;
+
+    // create up to MAX_DECOS, split left/right
+    const half = Math.ceil(MAX_DECOS / 2);
+    for (let i=0;i<half;i++){
+      createDeco('cp-float-left', (i%2? 'cp-small':'cp-large'), 20 + i*8);
+    }
+    for (let i=0;i<MAX_DECOS-half;i++){
+      createDeco('cp-float-right', (i%2? 'cp-small':'cp-large'), 22 + i*7);
+    }
+  }
+
+  // Create the scroll hint and append to body
+  function createScrollHint() {
+    if (hintEl) return hintEl;
+    hintEl = document.createElement('div');
+    hintEl.className = 'cp-scroll-hint cp-bounce';
+    hintEl.innerHTML = `<span class="cp-hint-text">Scroll down for more</span><span class="cp-hint-heart">💗</span>`;
+    hintEl.setAttribute('role','status');
+    hintEl.setAttribute('aria-live','polite');
+    document.body.appendChild(hintEl);
+    return hintEl;
+  }
+
+  // Hide hint and decorations with fade and then remove listeners
+  function hideHintAndDecos() {
+    if (hidden) return;
+    hidden = true;
+
+    if (hintEl) hintEl.classList.add('cp-hidden');
+
+    // fade decorations
+    DECO_IDS.forEach(d => {
+      if (d && d.style) {
+        d.style.transition = 'opacity 420ms ease, transform 420ms ease';
+        d.style.opacity = '0';
+        // remove after transition
+        setTimeout(()=>{ try{ d.remove(); }catch(e){} }, 520);
+      }
+    });
+
+    // remove hint after transition
+    setTimeout(()=>{ try{ if (hintEl) hintEl.remove(); }catch(e){} }, 520);
+
+    // cleanup scroll listener
+    window.removeEventListener('scroll', onScrollCheck, {passive:true});
+  }
+
+  // Scroll handler checks threshold
+  function onScrollCheck() {
+    const sc = window.scrollY || document.documentElement.scrollTop || 0;
+    if (sc >= SCROLL_HIDE_PX) hideHintAndDecos();
+  }
+
+  // Observe DOM for the first memory screen to appear, then attach hint/decorations
+  function observeForMemoryScreen() {
+    // If memory-wrapper already present, attach immediately
+    if (document.querySelector('.memory-wrapper') || document.getElementById('mem')) {
+      createDecorations();
+      createScrollHint();
+      // attach scroll listener
+      window.addEventListener('scroll', onScrollCheck, {passive:true});
+      return;
+    }
+
+    // Otherwise watch for insertion
+    const mo = new MutationObserver((mutations, obs) => {
+      if (document.querySelector('.memory-wrapper') || document.getElementById('mem')) {
+        createDecorations();
+        createScrollHint();
+        window.addEventListener('scroll', onScrollCheck, {passive:true});
+        obs.disconnect();
+      }
+    });
+
+    mo.observe(document.documentElement || document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // safety timeout: if nothing appears in 10s, create decorations anyway
+    setTimeout(()=>{
+      if (!decoCreated) {
+        createDecorations();
+        createScrollHint();
+        window.addEventListener('scroll', onScrollCheck, {passive:true});
+        mo.disconnect();
+      }
+    }, 10000);
+  }
+
+  // Start observing on DOMContentLoaded or immediately if already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observeForMemoryScreen);
+  } else {
+    observeForMemoryScreen();
+  }
+
+  // Expose a small API for manual control if needed (optional)
+  window.__cpScrollHint = {
+    show: () => { createDecorations(); createScrollHint(); },
+    hide: hideHintAndDecos
+  };
+})();
+</script>
+
 </html>
+
 
 
 
