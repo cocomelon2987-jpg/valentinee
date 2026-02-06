@@ -185,30 +185,98 @@ button:hover{background:#c94b6a}
   color:white;
   position:relative;   /* start aligned normally */
 }
+.playing-indicator {
+  display:inline-block;
+  width:10px;
+  height:10px;
+  margin-left:8px;
+  border-radius:50%;
+  background:#e88aa5;
+  box-shadow:0 0 8px rgba(232,138,165,0.9);
+  vertical-align:middle;
+  animation: pulse 1s infinite;
+  opacity:0;
+  transition:opacity .2s;
+}
+.playing-indicator.visible { opacity:1; }
+@keyframes pulse {
+  0% { transform:scale(1); }
+  50% { transform:scale(1.25); }
+  100% { transform:scale(1); }
+}
 
 </style>
 
 </head>
 
 <body>
-<audio id="music" src="bg-music.mp3" loop></audio>
+<audio id="music" src="bg-music.mp3" loop preload="auto" playsinline crossorigin="anonymous"></audio>
 <div id="app"></div>
-
 <script>
-const app=document.getElementById("app");
-const music=document.getElementById("music");
+const app = document.getElementById("app");
+const music = document.getElementById("music");
 
-function render(h){app.innerHTML=h;}
+function render(h){ app.innerHTML = h; }
 
-function startMusic(){
-  music.volume=0;
-  music.play().catch(()=>{});
-  let v=0;
-  const f=setInterval(()=>{
-    if(v<0.35){v+=0.01;music.volume=v}else clearInterval(f);
-  },200);
+/* ===== Web Audio fade-in helpers ===== */
+let audioCtx = null;
+let sourceNode = null;
+let gainNode = null;
+const targetVolume = 0.35;
+const fadeDuration = 1.2; // seconds
+
+function initAudioNodes() {
+  if (audioCtx) return true;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sourceNode = audioCtx.createMediaElementSource(music);
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0;
+    sourceNode.connect(gainNode).connect(audioCtx.destination);
+    return true;
+  } catch (e) {
+    audioCtx = null;
+    gainNode = null;
+    return false;
+  }
 }
 
+function startMusicFadeIn() {
+  if (music._fadingStarted) return;
+  music._fadingStarted = true;
+
+  const hasWebAudio = initAudioNodes();
+
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(()=>{});
+  }
+
+  music.currentTime = 0;
+  music.play().catch(()=>{});
+
+  const indicator = document.querySelector(".playing-indicator");
+  if (indicator) indicator.classList.add("visible");
+
+  if (hasWebAudio && gainNode) {
+    const now = audioCtx.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + fadeDuration);
+  } else {
+    music.volume = 0;
+    let v = 0;
+    const steps = Math.max(1, Math.floor(fadeDuration * 30));
+    const stepInc = targetVolume / steps;
+    const stepMs = (fadeDuration * 1000) / steps;
+    const f = setInterval(() => {
+      v = Math.min(targetVolume, v + stepInc);
+      music.volume = v;
+      if (v >= targetVolume) clearInterval(f);
+    }, stepMs);
+  }
+}
+
+/* ===== Utilities from your original code ===== */
 function typeWriter(text,id,speed=35){
   let i=0;
   const el=document.getElementById(id);
@@ -228,7 +296,7 @@ function popSticker(){
   setTimeout(()=>s.remove(),1000);
 }
 
-/* SLIDE 1 */
+/* ===== Your slides and flow (unchanged except startMem) ===== */
 render(`
 <div class="screen"><div class="box">
 <p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
@@ -237,26 +305,26 @@ render(`
 </div></div>`);
 
 function slide2(){
-render(`<div class="screen"><div class="box">
-<p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-<button onclick="slide3()">right</button>
-<button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
-</div></div>`);
+  render(`<div class="screen"><div class="box">
+  <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+  <button onclick="slide3()">right</button>
+  <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
+  </div></div>`);
 }
 
 function slide3(){
-render(`<div class="screen"><div class="box">
-<p id="typeSlide3"></p>
-<button onclick="startMem()">convince me more</button>
-</div></div>`);
-typeWriter(`but look where we stand today...
+  render(`<div class="screen"><div class="box">
+  <p id="typeSlide3"></p>
+  <button onclick="startMem()">convince me more</button>
+  </div></div>`);
+  typeWriter(`but look where we stand today...
 
 You stayed. Not just on the good days.
 We survived the messy days too.
 Mostly playing around, being goofy 💗`,"typeSlide3");
 }
 
-/* MEMORIES */
+/* MEMORIES data unchanged */
 const pics=["pic1.jpg","pic2.jpg","pic3.jpg","pic4.jpg","pic5.jpg","pic6.jpg"];
 const texts=[
 "kha lugi mac Donald domino zindagibhar tumhare sath, pakki par nakhre obvious",
@@ -269,10 +337,23 @@ const texts=[
 
 let i=0;
 
+/* ===== REPLACED startMem to start music immediately after click ===== */
 function startMem(){
-startMusic();
-render(`<div class="screen"><div class="memory-wrapper" id="mem"></div></div>`);
-showMem();
+  // create and show a tiny indicator next to the button row
+  if (!document.querySelector(".playing-indicator")) {
+    const ind = document.createElement("span");
+    ind.className = "playing-indicator";
+    const btnRow = document.querySelector(".btnRow") || document.body;
+    btnRow.appendChild(ind);
+  }
+
+  // start music immediately after the user click (user gesture)
+  startMusicFadeIn();
+
+  // then render memories as before
+  render(`<div class="screen"><div class="memory-wrapper" id="mem"></div></div>`);
+  i = 0; // reset index so memories replay from start
+  showMem();
 }
 
 function showMem(){
@@ -289,7 +370,6 @@ function showMem(){
   card.style.zIndex=i;
 
   card.style.transform = `rotate(${Math.random()*6-3}deg)`;
-
 
   card.innerHTML = `
     <img src="${pics[i]}">
@@ -323,7 +403,6 @@ function fadeMemories(){
 
     typeWriter("Yeh sab dheere dheere buna hai pyaar ke sath ❤️","loveLine",40);
 
-    // 👉 FIRST NO LOGIC (does NOT run away)
     document.getElementById("noLoveBtn").addEventListener("click",()=>{
       alert("abe chup be lawdeya");
     });
@@ -331,94 +410,92 @@ function fadeMemories(){
   },1200);
 }
 
-/* FINAL */
+/* FINAL and yes/no logic unchanged */
 function finalScreen(){
-render(`
-  <div class="screen">
-    <div class="box" id="finalBox">
+  render(`
+    <div class="screen">
+      <div class="box" id="finalBox">
 
-      <p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
+        <p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
 
-      <div class="btnRow">
-        <button id="yesBtn" onclick="yes()">aur koi option hai?</button>
-        <button class="no" id="noBtn">no</button>
+        <div class="btnRow">
+          <button id="yesBtn" onclick="yes()">aur koi option hai?</button>
+          <button class="no" id="noBtn">no</button>
+        </div>
+
       </div>
-
     </div>
-  </div>
-`);
+  `);
 
-const no = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
-const box = document.getElementById("finalBox");
+  const no = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const box = document.getElementById("finalBox");
 
-/* Stop actual clicking */
-no.addEventListener("click", e => e.preventDefault());
+  no.addEventListener("click", e => e.preventDefault());
 
-function moveNoBtn(){
+  function moveNoBtn(){
+    no.style.position = "absolute";
 
-  // switch to absolute AFTER first hover
-  no.style.position = "absolute";
+    const boxRect = box.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+    const noRect  = no.getBoundingClientRect();
 
-  const boxRect = box.getBoundingClientRect();
-  const yesRect = yesBtn.getBoundingClientRect();
-  const noRect  = no.getBoundingClientRect();
+    const padding = 10;
 
-  const padding = 10;
+    const maxX = box.clientWidth  - noRect.width  - padding;
+    const maxY = box.clientHeight - noRect.height - padding;
 
-  const maxX = box.clientWidth  - noRect.width  - padding;
-  const maxY = box.clientHeight - noRect.height - padding;
+    let randX, randY, overlap;
 
-  let randX, randY, overlap;
+    do {
+      randX = Math.random() * maxX;
+      randY = Math.random() * maxY;
 
-  do {
-    randX = Math.random() * maxX;
-    randY = Math.random() * maxY;
+      const futureNo = {
+        left: randX + boxRect.left,
+        right: randX + boxRect.left + noRect.width,
+        top: randY + boxRect.top,
+        bottom: randY + boxRect.top + noRect.height
+      };
 
-    const futureNo = {
-      left: randX + boxRect.left,
-      right: randX + boxRect.left + noRect.width,
-      top: randY + boxRect.top,
-      bottom: randY + boxRect.top + noRect.height
-    };
+      overlap = !(
+        futureNo.right < yesRect.left ||
+        futureNo.left  > yesRect.right ||
+        futureNo.bottom < yesRect.top ||
+        futureNo.top > yesRect.bottom
+      );
 
-    overlap = !(
-      futureNo.right < yesRect.left ||
-      futureNo.left  > yesRect.right ||
-      futureNo.bottom < yesRect.top ||
-      futureNo.top > yesRect.bottom
-    );
+    } while (overlap);
 
-  } while (overlap);
+    no.style.left = randX + "px";
+    no.style.top  = randY + "px";
+  }
 
-  no.style.left = randX + "px";
-  no.style.top  = randY + "px";
-}
-
-/* Escape triggers */
-no.addEventListener("mouseenter", moveNoBtn);
-no.addEventListener("mousedown", moveNoBtn);
-no.addEventListener("touchstart", moveNoBtn);
+  no.addEventListener("mouseenter", moveNoBtn);
+  no.addEventListener("mousedown", moveNoBtn);
+  no.addEventListener("touchstart", moveNoBtn);
 }
 
 function yes(){
-hearts();
-render(`<div class="screen"><h1>ab toh fas gayi tum mere sath forever k liye! 💗</h1></div>`);
+  hearts();
+  render(`<div class="screen"><h1>ab toh fas gayi tum mere sath forever k liye! 💗</h1></div>`);
 }
 
 function hearts(){
-setInterval(()=>{
-const h=document.createElement("div");
-h.className="heart";
-h.innerText="💗";
-h.style.left=Math.random()*100+"vw";
-document.body.appendChild(h);
-setTimeout(()=>h.remove(),4000);
-},300);
+  setInterval(()=>{
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerText="💗";
+    h.style.left=Math.random()*100+"vw";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),4000);
+  },300);
 }
 </script>
+
 </body>
 </html>
+
 
 
 
