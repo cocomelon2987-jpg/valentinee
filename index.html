@@ -55,6 +55,17 @@ body::after{
   position:relative;
   overflow:hidden;   /* prevents escape outside box */
 }
+  .box-image{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  border-radius:16px;
+  margin-bottom:18px;
+  display:block;
+}
+  @media (max-width:600px){
+  .box-image{ height:160px; }
+}
 
 button{
   padding:12px 26px;
@@ -388,7 +399,7 @@ function popSticker(){
 /* ===== Your slides and flow (unchanged except startMem) ===== */
 render(`
 <div class="screen"><div class="box">
-<p>Ok, so valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
+<p>Ok, Sooo, valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
 <button onclick="slide2()">right</button>
 <button onclick="alert('tum toh potty ho, try again')">naah</button>
 </div></div>`);
@@ -402,10 +413,20 @@ function slide2(){
 }
 
 function slide3(){
-  render(`<div class="screen"><div class="box">
-  <p id="typeSlide3"></p>
-  <button onclick="startMem()">convince me more</button>
-  </div></div>`);
+  render(`
+    <div class="screen">
+      <div class="box">
+
+        <img src="pic7.jpg" class="box-image">
+
+        <p id="typeSlide3"></p>
+
+        <button onclick="startMem()">convince me more</button>
+
+      </div>
+    </div>
+  `);
+
   typeWriter(`but look where we stand today...
 
 You stayed. Not just on the good days.
@@ -715,6 +736,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
