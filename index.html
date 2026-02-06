@@ -52,6 +52,7 @@ body::after{
   backdrop-filter: blur(6px);
   border:1px solid rgba(255,255,255,0.6);
   position:relative;
+  overflow:hidden;   /* prevents escape outside box */
 }
 
 button{
@@ -182,9 +183,7 @@ button:hover{background:#c94b6a}
 .no{
   background:#f5a9c4;
   color:white;
-  position:fixed;   /* allows free movement on screen */
-  left:auto;
-  top:auto;
+  position:relative;   /* start aligned normally */
 }
 
 </style>
@@ -336,44 +335,69 @@ function fadeMemories(){
 function finalScreen(){
 render(`
   <div class="screen">
-    <div class="box">
+    <div class="box" id="finalBox">
 
-<p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
-<div class="btnRow">
-  <button onclick="yes()">aur koi option hai?</button>
-  <button class="no" id="noBtn">no</button>
-</div>
+      <p>soooo, will you be my valentine,<br><b>Krish Sharma?</b></p>
 
-</div></div>`);
+      <div class="btnRow">
+        <button id="yesBtn" onclick="yes()">aur koi option hai?</button>
+        <button class="no" id="noBtn">no</button>
+      </div>
 
-const no=document.getElementById("noBtn");
+    </div>
+  </div>
+`);
 
-// block clicks
-no.addEventListener("click",(e)=>e.preventDefault());
+const no = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const box = document.getElementById("finalBox");
 
-// function to move button anywhere on screen
+/* Stop actual clicking */
+no.addEventListener("click", e => e.preventDefault());
+
 function moveNoBtn(){
-  const winW = window.innerWidth;
-  const winH = window.innerHeight;
-  const btnRect = no.getBoundingClientRect();
 
-  const maxX = winW - btnRect.width;
-  const maxY = winH - btnRect.height;
+  // switch to absolute AFTER first hover
+  no.style.position = "absolute";
 
-  const randX = Math.random() * maxX;
-  const randY = Math.random() * maxY;
+  const boxRect = box.getBoundingClientRect();
+  const yesRect = yesBtn.getBoundingClientRect();
+  const noRect  = no.getBoundingClientRect();
+
+  const padding = 10;
+
+  const maxX = box.clientWidth  - noRect.width  - padding;
+  const maxY = box.clientHeight - noRect.height - padding;
+
+  let randX, randY, overlap;
+
+  do {
+    randX = Math.random() * maxX;
+    randY = Math.random() * maxY;
+
+    const futureNo = {
+      left: randX + boxRect.left,
+      right: randX + boxRect.left + noRect.width,
+      top: randY + boxRect.top,
+      bottom: randY + boxRect.top + noRect.height
+    };
+
+    overlap = !(
+      futureNo.right < yesRect.left ||
+      futureNo.left  > yesRect.right ||
+      futureNo.bottom < yesRect.top ||
+      futureNo.top > yesRect.bottom
+    );
+
+  } while (overlap);
 
   no.style.left = randX + "px";
-  no.style.top = randY + "px";
+  no.style.top  = randY + "px";
 }
 
-// desktop hover
+/* Escape triggers */
 no.addEventListener("mouseenter", moveNoBtn);
-
-// desktop click attempt
 no.addEventListener("mousedown", moveNoBtn);
-
-// mobile touch
 no.addEventListener("touchstart", moveNoBtn);
 }
 
@@ -395,6 +419,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
