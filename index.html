@@ -180,9 +180,11 @@ button:hover{background:#c94b6a}
 
 /* Adjust the "no" button styling */
 .no{
-  background:#f5a9c4;   /* softer pink to match theme */
-  color:white;           /* consistent with other buttons */
-  position:absolute;   /* allows free movement inside box */
+  background:#f5a9c4;
+  color:white;
+  position:fixed;   /* allows free movement on screen */
+  left:auto;
+  top:auto;
 }
 
 </style>
@@ -345,26 +347,34 @@ render(`
 </div></div>`);
 
 const no=document.getElementById("noBtn");
-const box=document.querySelector(".box");
 
-// make button unclickable
+// block clicks
 no.addEventListener("click",(e)=>e.preventDefault());
 
-// move freely inside box
-no.addEventListener("mouseover",()=>{
-  const boxRect = box.getBoundingClientRect();
+// function to move button anywhere on screen
+function moveNoBtn(){
+  const winW = window.innerWidth;
+  const winH = window.innerHeight;
   const btnRect = no.getBoundingClientRect();
 
-  // calculate max X and Y so button stays inside
-  const maxX = boxRect.width - btnRect.width;
-  const maxY = boxRect.height - btnRect.height;
+  const maxX = winW - btnRect.width;
+  const maxY = winH - btnRect.height;
 
   const randX = Math.random() * maxX;
   const randY = Math.random() * maxY;
 
   no.style.left = randX + "px";
   no.style.top = randY + "px";
-});
+}
+
+// desktop hover
+no.addEventListener("mouseenter", moveNoBtn);
+
+// desktop click attempt
+no.addEventListener("mousedown", moveNoBtn);
+
+// mobile touch
+no.addEventListener("touchstart", moveNoBtn);
 }
 
 function yes(){
@@ -385,6 +395,7 @@ setTimeout(()=>h.remove(),4000);
 </script>
 </body>
 </html>
+
 
 
 
