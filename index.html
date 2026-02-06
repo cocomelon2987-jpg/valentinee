@@ -496,6 +496,7 @@ function showMem(){
 }
 
 function fadeMemories(){
+  if (window.__cpScrollHint) window.__cpScrollHint.hide();
   document.querySelectorAll(".memory-card").forEach(c=>c.classList.add("fade-out"));
 
   setTimeout(()=>{
@@ -731,6 +732,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
