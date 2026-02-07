@@ -374,14 +374,14 @@ button:hover{background:#c94b6a}
     bottom: 10px;
     right: 10px;
   }
- /* SLIDE 2 STICKERS – FIXED */
-/* ===== SLIDE-SPECIFIC STICKERS ===== */
+
+  /* ===== SLIDE 2 STICKERS (CORRECT PLACE) ===== */
 
 .screen-sticker {
   position: absolute;
   width: 250px;
   pointer-events: none;
-  z-index: 10;            /* below box */
+  z-index: 10;
 }
 
 .sticker-left-bottom {
@@ -394,13 +394,13 @@ button:hover{background:#c94b6a}
   top: 32px;
 }
 
-/* box must stay above stickers */
+/* box always above stickers */
 .box {
   position: relative;
   z-index: 50;
 }
 
-/* mobile adjustment */
+/* mobile tuning for slide 2 */
 @media (max-width: 768px) {
   .screen-sticker {
     width: 180px;
@@ -416,6 +416,7 @@ button:hover{background:#c94b6a}
     top: 20px;
   }
 }
+ 
 }
 </style>
 
@@ -866,6 +867,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
