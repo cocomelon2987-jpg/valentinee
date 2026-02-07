@@ -325,6 +325,38 @@ button:hover{background:#c94b6a}
   50%  { transform: translateY(-12px) rotate(4deg); }
   100% { transform: translateY(0) rotate(-4deg); }
 }
+  /* FIRST SCREEN STICKERS */
+.sticker-top-left{
+  position: fixed;
+  top: 80px;
+  left: 40px;
+  width: 300px;
+  z-index: 40;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+}
+
+.sticker-bottom-right{
+  position: fixed;
+  bottom: 120px;
+  right: 40px;
+  width: 300px;
+  z-index: 40;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+}
+  /* Shared gentle floating animation */
+@keyframes stickerFloat{
+  0%   { transform: translateY(0) rotate(-4deg); }
+  50%  { transform: translateY(-14px) rotate(4deg); }
+  100% { transform: translateY(0) rotate(-4deg); }
+}
+
+/* Apply animation to first screen stickers */
+.sticker-top-left,
+.sticker-bottom-right{
+  animation: stickerFloat 4s ease-in-out infinite;
+}
 </style>
 
 </head>
@@ -418,11 +450,19 @@ function popSticker(){
 
 /* ===== Your slides and flow (unchanged except startMem) ===== */
 render(`
-<div class="screen"><div class="box">
-<p>Ok, Sooo, valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
-<button onclick="slide2()">right</button>
-<button onclick="alert('tum toh potty ho, try again')">naah</button>
-</div></div>`);
+<div class="screen">
+
+  <div class="box">
+    <p>Ok, Sooo, valentine wale chochle hume jyada samajh ni aate,<br>cheesy lagte, right?</p>
+    <button onclick="slide2()">right</button>
+    <button onclick="alert('tum toh potty ho, try again')">naah</button>
+  </div>
+
+  <img src="sticker2.png" class="sticker-top-left">
+  <img src="sticker3.png" class="sticker-bottom-right">
+
+</div>
+`);
 
 function slide2(){
   render(`<div class="screen"><div class="box">
@@ -754,6 +794,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
