@@ -374,6 +374,42 @@ button:hover{background:#c94b6a}
     bottom: 10px;
     right: 10px;
   }
+  /* SECOND SLIDE STICKERS */
+.sticker2-right-top{
+  position: fixed;
+  top: 60px;
+  right: 40px;
+  width: 300px;
+  z-index: 20;          /* below box */
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+}
+
+.sticker2-left-bottom{
+  position: fixed;
+  bottom: 24px;
+  left: 40px;
+  width: 300px;
+  z-index: 20;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+}
+
+/* MOBILE ADJUSTMENT */
+@media (max-width: 768px){
+  .sticker2-right-top{
+    top: 20px;
+    right: 10px;
+    width: 300px;
+  }
+
+  .sticker2-left-bottom{
+    bottom: 10px;
+    left: 10px;
+    width: 300px;
+  }
+}
+  
 }
 </style>
 
@@ -483,11 +519,20 @@ render(`
 `);
 
 function slide2(){
-  render(`<div class="screen"><div class="box">
-  <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
-  <button onclick="slide3()">right</button>
-  <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
-  </div></div>`);
+  render(`
+    <div class="screen">
+
+      <div class="box">
+        <p>Ek saal pehle tak relationship bf-gf bhi bakchodi lagti thi, haina?</p>
+        <button onclick="slide3()">right</button>
+        <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
+      </div>
+
+      <img src="sticker4.png" class="sticker2-right-top">
+      <img src="sticker5.png" class="sticker2-left-bottom">
+
+    </div>
+  `);
 }
 
 function slide3(){
@@ -812,6 +857,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
