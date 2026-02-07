@@ -723,8 +723,16 @@ function finalScreen(){
 
 function yes(){
   hearts();
-  render(`<div class="screen"><h1>ab toh fas gayi tum mere sath forever k liye! 💗</h1></div>`);
+  render(`
+    <div class="screen">
+      <div style="text-align:center; padding:40px;">
+        <img src="pic8.jpg" style="width:280px; max-width:90vw; height:auto; border-radius:20px; margin-bottom:30px; box-shadow:0 20px 40px rgba(233,120,150,0.3);">
+        <h1>Ab toh fas gayi tum mere sath forever k liye! 💗</h1>
+      </div>
+    </div>
+  `);
 }
+
 
 function hearts(){
   setInterval(()=>{
@@ -864,6 +872,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
