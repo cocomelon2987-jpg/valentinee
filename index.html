@@ -327,25 +327,7 @@ button:hover{background:#c94b6a}
   50%  { transform: translateY(-12px) rotate(4deg); }
   100% { transform: translateY(0) rotate(-4deg); }
 }
-  /* FIRST SCREEN STICKERS */
-.sticker-top-left{
-  position: fixed;
-  top: 80px;
-  left: 40px;
-  width: 300px;
-  z-index: 40;
-  pointer-events: none;
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
-}
-
-.sticker-bottom-right{
-  position: fixed;
-  bottom: 24px;          /* keeps it clearly below the box */
-  right: 30px;
-  width: 300px;
-  z-index: 20;           /* LOWER than box */
-  pointer-events: none;
-}
+ 
   /* Shared gentle floating animation */
 @keyframes stickerFloat{
   0%   { transform: translateY(0) rotate(-4deg); }
@@ -375,48 +357,50 @@ button:hover{background:#c94b6a}
     right: 10px;
   }
 
-  /* ===== SLIDE 2 STICKERS (CORRECT PLACE) ===== */
+ /* ===== SLIDE 2 STICKERS ===== */
 
-.screen-sticker {
-  position: absolute;
+.screen-sticker{
+  position: absolute;          /* relative to .screen */
   width: 250px;
   pointer-events: none;
-  z-index: 10;
+  z-index: 10;                 /* below box */
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
 }
 
-.sticker-left-bottom {
+/* left bottom sticker */
+.sticker-left-bottom{
   left: 32px;
   bottom: 32px;
 }
 
-.sticker-right-top {
+/* right top sticker */
+.sticker-right-top{
   right: 32px;
   top: 32px;
 }
 
 /* box always above stickers */
-.box {
+.box{
   position: relative;
   z-index: 50;
 }
+@media (max-width: 768px){
 
-/* mobile tuning for slide 2 */
-@media (max-width: 768px) {
-  .screen-sticker {
+  .screen-sticker{
     width: 180px;
   }
 
-  .sticker-left-bottom {
+  .sticker-left-bottom{
     left: 12px;
     bottom: 20px;
   }
 
-  .sticker-right-top {
+  .sticker-right-top{
     right: 12px;
     top: 20px;
   }
 }
- 
+
 }
 </style>
 
@@ -867,6 +851,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
