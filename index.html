@@ -306,6 +306,25 @@ button:hover{background:#c94b6a}
 @media (prefers-reduced-motion: reduce) {
   .cp-float-deco, .cp-scroll-hint { animation: none !important; transition: none !important; }
 }
+  /* LOVE SCREEN STICKER */
+.love-sticker{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 140px;
+  z-index: 50;
+  pointer-events: none;
+
+  /* animation */
+  animation: stickerFloat 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
+}
+
+@keyframes stickerFloat{
+  0%   { transform: translateY(0) rotate(-4deg); }
+  50%  { transform: translateY(-12px) rotate(4deg); }
+  100% { transform: translateY(0) rotate(-4deg); }
+}
 </style>
 
 </head>
@@ -510,9 +529,12 @@ function fadeMemories(){
             <button id="noLoveBtn">no</button>
           </div>
 
-        </div>
-      </div>
-    `);
+           </div>
+
+    <img src="sticker1.png" class="love-sticker">
+
+  </div>
+`);
 
     typeWriter("Yeh sab dheere dheere buna hai pyaar ke sath ❤️","loveLine",40);
 
@@ -732,6 +754,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
