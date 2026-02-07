@@ -379,7 +379,7 @@ button:hover{background:#c94b6a}
 .sticker2-thumb{
   position: absolute;
   left: 60px;
-  bottom: 140px;
+  bottom: 40px;
   width: 225px;          /* 75% of 300 */
   z-index: 20;
   pointer-events: none;
@@ -388,8 +388,9 @@ button:hover{background:#c94b6a}
 .sticker2-cool{
   position: absolute;
   right: 60px;
-  bottom: 40px;
-  width: 225px;          /* 75% of 300 */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 202.5px;          /* 75% of 300 */
   z-index: 20;
   pointer-events: none;
 }
@@ -398,14 +399,15 @@ button:hover{background:#c94b6a}
 @media (max-width: 768px){
   .sticker2-thumb{
     left: 10px;
-    bottom: 120px;
-    width: 200px;
+    bottom: 20px;
+    width: 180px;
   }
 
   .sticker2-cool{
     right: 10px;
     bottom: 20px;
-    width: 200px;
+    transform: none;
+    width: 180px;
   }
 }
   
@@ -856,6 +858,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
