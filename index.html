@@ -43,7 +43,7 @@ body::after{
   text-align:center;
   padding:20px;
   padding-bottom:220px;
-  position: relative;   /* IMPORTANT */
+  position: relative;   /* anchor for absolute stickers */
 }
 
 .box{
@@ -55,8 +55,7 @@ body::after{
   backdrop-filter: blur(6px);
   border:1px solid rgba(255,255,255,0.6);
   position:relative;
-  overflow:visible;
-    z-index:50;
+   z-index: 50; /* ensure box stays above stickers */
 }
   .box-image{
   width:100%;
@@ -379,7 +378,7 @@ button:hover{background:#c94b6a}
 .sticker2-thumb{
   position: absolute;
   left: 60px;
-  bottom: 40px;
+ bottom: 40px; /* left bottom */
   width: 225px;          /* 75% of 300 */
   z-index: 20;
   pointer-events: none;
@@ -388,9 +387,9 @@ button:hover{background:#c94b6a}
 .sticker2-cool{
   position: absolute;
   right: 60px;
-  top: 50%;
+  top: 50%; /* middle vertically */
   transform: translateY(-50%);
-  width: 202.5px;          /* 75% of 300 */
+ width: 202.5px; /* 10% smaller */
   z-index: 20;
   pointer-events: none;
 }
@@ -405,7 +404,7 @@ button:hover{background:#c94b6a}
 
   .sticker2-cool{
     right: 10px;
-    bottom: 20px;
+    top: 20px; /* move to top-right */
     transform: none;
     width: 180px;
   }
@@ -858,6 +857,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
