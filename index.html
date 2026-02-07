@@ -375,41 +375,47 @@ button:hover{background:#c94b6a}
     right: 10px;
   }
  /* SLIDE 2 STICKERS – FIXED */
-.sticker2-thumb{
+/* ===== SLIDE-SPECIFIC STICKERS ===== */
+
+.screen-sticker {
   position: absolute;
-  left: 60px;
- bottom: 40px; /* left bottom */
-  width: 225px;          /* 75% of 300 */
-  z-index: 20;
+  width: 250px;
   pointer-events: none;
+  z-index: 10;            /* below box */
 }
 
-.sticker2-cool{
-  position: absolute;
-  right: 60px;
-  top: 50%; /* middle vertically */
-  transform: translateY(-50%);
- width: 202.5px; /* 10% smaller */
-  z-index: 20;
-  pointer-events: none;
+.sticker-left-bottom {
+  left: 32px;
+  bottom: 32px;
 }
 
-/* MOBILE TUNING */
-@media (max-width: 768px){
-  .sticker2-thumb{
-    left: 10px;
+.sticker-right-top {
+  right: 32px;
+  top: 32px;
+}
+
+/* box must stay above stickers */
+.box {
+  position: relative;
+  z-index: 50;
+}
+
+/* mobile adjustment */
+@media (max-width: 768px) {
+  .screen-sticker {
+    width: 180px;
+  }
+
+  .sticker-left-bottom {
+    left: 12px;
     bottom: 20px;
-    width: 180px;
   }
 
-  .sticker2-cool{
-    right: 10px;
-    top: 20px; /* move to top-right */
-    transform: none;
-    width: 180px;
+  .sticker-right-top {
+    right: 12px;
+    top: 20px;
   }
 }
-  
 }
 </style>
 
@@ -528,8 +534,11 @@ function slide2(){
         <button onclick="alert('tum toh geeli wali potti ho, gandmastii mat karo')">naah</button>
       </div>
 
-      <img src="sticker5.png" class="sticker2-thumb">
-      <img src="sticker4.png" class="sticker2-cool">
+      <img src="sticker5.png"
+     class="screen-sticker sticker-left-bottom">
+
+<img src="sticker4.png"
+     class="screen-sticker sticker-right-top">
 
     </div>
   `);
@@ -857,6 +866,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
