@@ -416,13 +416,17 @@ button:hover{background:#c94b6a}
     width: 180px;
   }
 }
+  
 #music { display: none; } /* Hide audio player */
 </style>
 
 </head>
 
 <body>
-<audio id="music" src="bg-music.mp3" loop preload="auto" playsinline crossorigin="anonymous"></audio>
+<audio id="music" loop preload="auto" playsinline crossorigin="anonymous">
+  <source src="bg-music.mp3" type="audio/mpeg">
+</audio>
+
 <div id="app"></div>
 <script>
 const app = document.getElementById("app");
@@ -871,6 +875,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
