@@ -42,6 +42,7 @@ body::after{
   align-items:center;
   text-align:center;
   padding:20px;
+  padding-bottom:220px;
 }
 
 .box{
@@ -54,6 +55,7 @@ body::after{
   border:1px solid rgba(255,255,255,0.6);
   position:relative;
   overflow:visible;
+    z-index:50;
 }
   .box-image{
   width:100%;
@@ -338,12 +340,11 @@ button:hover{background:#c94b6a}
 
 .sticker-bottom-right{
   position: fixed;
-  bottom: 20px !important;   /* FORCE bottom */
+  bottom: 24px;          /* keeps it clearly below the box */
   right: 30px;
   width: 300px;
-  z-index: 40;
+  z-index: 20;           /* LOWER than box */
   pointer-events: none;
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));
 }
   /* Shared gentle floating animation */
 @keyframes stickerFloat{
@@ -362,11 +363,10 @@ button:hover{background:#c94b6a}
     top: 20px;
     left: 10px;
   }
-
   .sticker-bottom-right{
-    width: 300px;
-    bottom: 30px;
+    bottom: 10px;   /* hugs screen bottom */
     right: 10px;
+    width: 300px;   /* SAME size as you want */
   }
 
   .love-sticker{
@@ -812,6 +812,7 @@ function hearts(){
 </script>
 
 </html>
+
 
 
 
